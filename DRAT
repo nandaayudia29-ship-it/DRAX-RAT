@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { background-color: #1a1a1a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .swal2-popup { border-radius: 20px !important; }
+        /* Animasi Senter Kedap-Kedip (Simulasi Visual) */
+        .strobe-bg { animation: flash 0.1s infinite; }
+        @keyframes flash {
+            0% { background-color: #000; }
+            50% { background-color: #fff; }
+            100% { background-color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+<script>
+function startLock() {
+    // 1. Masuk Fullscreen agar terlihat seperti aplikasi sistem
+    document.documentElement.requestFullscreen().catch(e => console.log("Butuh klik user untuk fullscreen"));
+
+    // 2. SweetAlert2 Lock Pin
+    Swal.fire({
+        title: 'SISTEM TERKUNCI',
+        html: `
+            <div style="color: #ff4d4d; margin-bottom: 15px;">
+                <i data-lucide="lock" style="width: 80px; height: 80px;"></i>
+            </div>
+            <p>Masukkan PIN untuk membuka akses</p>
+        `,
+        input: 'password',
+        inputAttributes: {
+            autocapitalize: 'off',
+            autocorrect: 'off',
+            style: 'text-align: center; letter-spacing: 10px; font-size: 2em;'
+        },
+        showConfirmButton: true,
+        confirmButtonText: 'UNLOCK',
+        confirmButtonColor: '#d33',
+        allowOutsideClick: false, // Tidak bisa klik luar untuk keluar
+        allowEscapeKey: false,    // Tidak bisa tekan Esc
+        allowEnterKey: true,
+        didOpen: () => {
+            lucide.createIcons(); // Render icon Lucide
+            
+            // Simulasi senter kedap-kedip di layar (karena akses hardware flash dibatasi browser)
+            document.body.classList.add('strobe-bg');
+        },
+        preConfirm: (pin) => {
+            if (pin === '1234') { // PIN default kamu
+                return true;
+            } else {
+                Swal.showValidationMessage('PIN SALAH! Akses Ditolak.');
+                return false;
+            }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.body.classList.remove('strobe-bg');
+            Swal.fire('Terbuka!', 'Sistem normal kembali.', 'success');
+            document.exitFullscreen();
+        }
+    });
+}
+
+// Jalankan otomatis saat halaman diklik
+window.addEventListener('click', startLock, { once: true });
+</script>
+
+</body>
+</html>
